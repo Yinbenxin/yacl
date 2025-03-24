@@ -251,6 +251,8 @@ void Context::SendAsyncThrottled(size_t dst_rank, ByteContainerView value,
       size_t sizeT = value.size();
       chl->send(buff, sizeT);
   }
+  SPDLOG_INFO("yacl send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+
   const auto event = NextP2PId(rank_, dst_rank);
 
   TraceLogger::LinkTrace(event, tag, value);
