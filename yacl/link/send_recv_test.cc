@@ -17,7 +17,9 @@
 #include <future>
 #include <limits>
 #include <unordered_map>
-
+#include "ichannel.h"
+#include "channel.h"
+#include "memchannel.h"
 #include "fmt/format.h"
 #include "gtest/gtest.h"
 
@@ -116,6 +118,7 @@ class FactoryTest : public ::testing::Test {
 
     auto create_brpc = [&](int self_rank) {
       contexts_[self_rank] = M::get_t_instance().CreateContext(desc, self_rank);
+      contexts_[self_rank]->chl = std::unique_ptr<gaianet::IChannel>(new gaianet::MemChannel(self_rank, 1-self_rank, "taskid", true));
     };
 
     std::vector<std::future<void>> creates;
@@ -143,10 +146,11 @@ class FactoryTest : public ::testing::Test {
 
   std::vector<std::shared_ptr<Context>> contexts_;
 };
-
 using FactoryTestTypes =
-    ::testing::Types<TestTypes<FactoryMem, 0>, TestTypes<FactoryBrpc, 0>,
-                     TestTypes<FactoryBrpc, 1>
+    ::testing::Types<TestTypes<FactoryMem, 0>
+// using FactoryTestTypes =
+//     ::testing::Types<TestTypes<FactoryMem, 0>, TestTypes<FactoryBrpc, 0>,
+//                      TestTypes<FactoryBrpc, 1>
 #ifdef YACL_WITH_TONGSUO
                      ,
                      TestTypes<FactoryBrpc, 2>

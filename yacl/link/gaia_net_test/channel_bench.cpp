@@ -8,6 +8,8 @@
 #include <shared_mutex>
 #include <signal.h>
 #include <thread>
+#include <stdio.h>
+#include <iostream> 
 #include <fmt/format.h>
 DEFINE_string(taskid, "channel_bench_cpp_", "task id, defalut is 'channel_bench_cpp_'");
 DEFINE_int32(role, -1, "role, defalut value is -1, mean run all role");
@@ -58,8 +60,9 @@ static inline std::string get_rand_string_fast(uint32_t* seed) {
 }
 
 static inline std::unique_ptr<gaianet::IChannel> create_channel(const std::string& taskid, uint32_t from, uint32_t to) {
-    auto FLAGS_type  = "mem";
+    auto FLAGS_type  = "grpc";
     if (FLAGS_type == "grpc") {
+        std::cout << "create_channel"<< taskid << std::endl;
         return std::unique_ptr<gaianet::IChannel>(new gaianet::channel(from, to, taskid, FLAGS_server_addr, FLAGS_redis_uri));
     } else if (FLAGS_type == "mem") {
         return std::unique_ptr<gaianet::IChannel>(new gaianet::MemChannel(from, to, taskid, FLAGS_enable_cv != 0));
@@ -94,7 +97,10 @@ struct Stat {
 static Stat stats[2];
 
 static void test_role(const std::string& taskid, uint32_t data_seed, int role) {
+    std::cout << "hello"<< role << std::endl;
+
     auto chl = create_channel(taskid, role, 1 - role);
+    std::cout << "create_channel" << std::endl;
 
     stats[role].t0 = std::chrono::steady_clock::now();
     stats[role].t1 = stats[role].t0;
@@ -102,7 +108,9 @@ static void test_role(const std::string& taskid, uint32_t data_seed, int role) {
     if (role == 0) {
         chl->send("hello", 5);
         std::string str;
+        std::cout << "send hello" << std::endl;
         chl->recv(str);
+        std::cout << "recv hello" << std::endl;
         assert(str == "hello");
     } else {
         std::string str;

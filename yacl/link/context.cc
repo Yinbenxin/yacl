@@ -74,6 +74,7 @@ Context::Context(ContextDesc desc, size_t rank,
       recv_timeout_ms_(desc_.recv_timeout_ms),
       is_sub_world_(is_sub_world) {
   const size_t world_size = desc_.parties.size();
+  // chl = std::unique_ptr<gaianet::IChannel>(new gaianet::MemChannel(rank, 1-rank, "taskid", true));
 
   YACL_ENFORCE(rank_ < static_cast<size_t>(world_size),
                "rank={} out of range world_size={}", rank, world_size);
@@ -245,8 +246,36 @@ void Context::SendAsyncThrottled(size_t dst_rank, Buffer&& value,
   SendAsyncThrottledInternal(dst_rank, event, std::move(value));
 }
 
+// void Context::Send(size_t dst_rank, ByteContainerView value,
+//                    std::string_view tag) {
+//   const auto event = NextP2PId(rank_, dst_rank);
+
+//   TraceLogger::LinkTrace(event, tag, value);
+
+//   SendInternal(dst_rank, event, value);
+// }
+
+// Buffer Context::Recv(size_t src_rank, std::string_view tag) {
+//   const auto event = NextP2PId(src_rank, rank_);
+
+//   TraceLogger::LinkTrace(event, tag, "");
+
+//   return RecvInternal(src_rank, event);
+// }
+
+
+
+
+
 void Context::Send(size_t dst_rank, ByteContainerView value,
                    std::string_view tag) {
+  if (chl != nullptr)
+  {
+      std::cout<<"send "<<dst_rank<<value.data()<<tag<<std::endl;
+      char* buff = (char*)value.data();
+      size_t sizeT = value.size();
+      chl->send(buff, sizeT);
+  }
   const auto event = NextP2PId(rank_, dst_rank);
 
   TraceLogger::LinkTrace(event, tag, value);
@@ -255,39 +284,23 @@ void Context::Send(size_t dst_rank, ByteContainerView value,
 }
 
 Buffer Context::Recv(size_t src_rank, std::string_view tag) {
-  const auto event = NextP2PId(src_rank, rank_);
 
-  TraceLogger::LinkTrace(event, tag, "");
+if (chl != nullptr)
+{
+  std::cout<<"rec "<<src_rank<<tag<<std::endl;
 
-  return RecvInternal(src_rank, event);
+  std::string str;
+  chl->recv(str);
+  Buffer future(str.c_str(), str.length());
+  return future;
 }
+const auto event = NextP2PId(src_rank, rank_);
 
+TraceLogger::LinkTrace(event, tag, "");
 
-// void Context::Send(size_t dst_rank, ByteContainerView value,
-//   std::string_view tag) {
-// const auto event = NextP2PId(rank_, dst_rank);
+return RecvInternal(src_rank, event);
 
-// TraceLogger::LinkTrace(event, tag, value);
-
-// SendInternal(dst_rank, event, value);
-
-// // u8* buff = (u8*)value.data();
-// // size_t sizeT = value.size();
-// // auto size = sizeT * sizeof(T);
-// // chl->send(buff, size);
-// }
-
-// Buffer Context::Recv(size_t src_rank, std::string_view tag) {
-// const auto event = NextP2PId(src_rank, rank_);
-
-// TraceLogger::LinkTrace(event, tag, "");
-
-// return RecvInternal(src_rank, event);
-// // std::string str;
-// // chl->recv(str);
-// // Buffer future(str.c_str(), str.length());
-// // return future;
-// }
+}
 
 
 void Context::SendAsyncInternal(size_t dst_rank, const std::string& key,
