@@ -323,11 +323,12 @@ class Context {
 
  protected:
   using P2PDirection = std::pair<int, int>;
-  
+
   const ContextDesc desc_;  // world description.
   const size_t rank_;       // my rank.
   const std::vector<std::shared_ptr<transport::IChannel>> channels_;
   const std::shared_ptr<transport::IReceiverLoop> receiver_loop_;
+
   // stateful properties.
   size_t counter_ = 0U;  // collective algorithm counter.
   std::map<P2PDirection, int> p2p_counter_;

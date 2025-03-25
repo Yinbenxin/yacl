@@ -19,6 +19,7 @@ def yacl_deps():
     _rule_proto()
     _rule_python()
     _rules_foreign_cc()
+    _rules_jni()
     _com_github_madler_zlib()
     _com_google_protobuf()
     _com_github_gflags_gflags()
@@ -33,6 +34,9 @@ def yacl_deps():
     _com_github_dltcollab_sse2neon()
     _com_github_msgpack_msgpack()
     _com_github_greendow_hash_drbg()
+
+    _com_github_pybind11_bazel()
+    _com_github_pybind11()
 
     # ssl
     _com_github_tongsuo_tongsuo()
@@ -82,6 +86,29 @@ def _org_interconnection():
         name = "macos_omp_arm64",
         build_file = "@yacl//bazel:local_openmp_macos.BUILD",
         path = "/opt/homebrew/opt/libomp/",
+    )
+
+def _com_github_pybind11_bazel():
+    maybe(
+        http_archive,
+        name = "pybind11_bazel",
+        sha256 = "dc4882b23a617575d0fd822aba88aa4a14133c3d428b5a8fb83d81d03444a475",
+        strip_prefix = "pybind11_bazel-8889d39b2b925b2a47519ae09402a96f00ccf2b4",
+        urls = [
+            "https://github.com/pybind/pybind11_bazel/archive/8889d39b2b925b2a47519ae09402a96f00ccf2b4.zip",
+        ],
+    )
+
+def _com_github_pybind11():
+    maybe(
+        http_archive,
+        name = "pybind11",
+        build_file = "@pybind11_bazel//:pybind11.BUILD",
+        sha256 = "bf8f242abd1abcd375d516a7067490fb71abd79519a282d22b6e4d19282185a7",
+        strip_prefix = "pybind11-2.12.0",
+        urls = [
+            "https://github.com/pybind/pybind11/archive/refs/tags/v2.12.0.tar.gz",
+        ],
     )
 
 def _com_github_brpc_brpc():
@@ -236,10 +263,10 @@ def _com_github_google_benchmark():
         http_archive,
         name = "com_github_google_benchmark",
         type = "tar.gz",
-        strip_prefix = "benchmark-1.8.5",
-        sha256 = "d26789a2b46d8808a48a4556ee58ccc7c497fcd4c0af9b90197674a81e04798a",
+        strip_prefix = "benchmark-1.9.0",
+        sha256 = "35a77f46cc782b16fac8d3b107fbfbb37dcd645f7c28eee19f3b8e0758b48994",
         urls = [
-            "https://github.com/google/benchmark/archive/refs/tags/v1.8.5.tar.gz",
+            "https://github.com/google/benchmark/archive/refs/tags/v1.9.0.tar.gz",
         ],
     )
 
@@ -247,11 +274,11 @@ def _com_github_blake3team_blake3():
     maybe(
         http_archive,
         name = "com_github_blake3team_blake3",
-        strip_prefix = "BLAKE3-1.5.3",
-        sha256 = "ec9114480857334858e73b727199c573bfdbed6138a83be573f076d37e671fc1",
+        strip_prefix = "BLAKE3-1.5.4",
+        sha256 = "ddd24f26a31d23373e63d9be2e723263ac46c8b6d49902ab08024b573fd2a416",
         build_file = "@yacl//bazel:blake3.BUILD",
         urls = [
-            "https://github.com/BLAKE3-team/BLAKE3/archive/refs/tags/1.5.3.tar.gz",
+            "https://github.com/BLAKE3-team/BLAKE3/archive/refs/tags/1.5.4.tar.gz",
         ],
     )
 
@@ -271,10 +298,10 @@ def _rule_python():
     maybe(
         http_archive,
         name = "rules_python",
-        sha256 = "be04b635c7be4604be1ef20542e9870af3c49778ce841ee2d92fcb42f9d9516a",
-        strip_prefix = "rules_python-0.35.0",
+        sha256 = "ca77768989a7f311186a29747e3e95c936a41dffac779aff6b443db22290d913",
+        strip_prefix = "rules_python-0.36.0",
         urls = [
-            "https://github.com/bazelbuild/rules_python/archive/refs/tags/0.35.0.tar.gz",
+            "https://github.com/bazelbuild/rules_python/archive/refs/tags/0.36.0.tar.gz",
         ],
     )
 
@@ -282,10 +309,19 @@ def _rules_foreign_cc():
     maybe(
         http_archive,
         name = "rules_foreign_cc",
-        sha256 = "b3127e65fc189f28833be0cf64ba8b33b0bbb2707b7d448ba3baba5247a3c9f8",
-        strip_prefix = "rules_foreign_cc-5c34b7136f0dec5d8abf2b840796ec8aef56a7c1",
+        sha256 = "a2e6fb56e649c1ee79703e99aa0c9d13c6cc53c8d7a0cbb8797ab2888bbc99a3",
+        strip_prefix = "rules_foreign_cc-0.12.0",
+        url = "https://github.com/bazelbuild/rules_foreign_cc/releases/download/0.12.0/rules_foreign_cc-0.12.0.tar.gz",
+    )
+
+def _rules_jni():
+    maybe(
+        http_archive,
+        name = "rules_jni",
+        sha256 = "a84863992f425220e1b5e7dfd4663ef1f7c69d63aff6e09a154880744ce0bab0",
+        strip_prefix = "rules_jni-0.10.1",
         urls = [
-            "https://github.com/bazelbuild/rules_foreign_cc/archive/5c34b7136f0dec5d8abf2b840796ec8aef56a7c1.tar.gz",
+            "https://github.com/fmeum/rules_jni/archive/refs/tags/v0.10.1.tar.gz",
         ],
     )
 
@@ -396,15 +432,15 @@ def _com_github_herumi_mcl():
     maybe(
         http_archive,
         name = "com_github_herumi_mcl",
-        strip_prefix = "mcl-1.88",
-        sha256 = "7fcc630c008e973dda88dd1d1cd2bb14face95ee3ed3b2f717fbb25d340d6ba5",
+        strip_prefix = "mcl-1.99",
+        sha256 = "5ff9702c1f1b021925d1334ca0a03c87783174075aeaf87801842d3c08b3d39e",
         type = "tar.gz",
         build_file = "@yacl//bazel:mcl.BUILD",
         patch_args = ["-p1"],
         patches = [
             "@yacl//bazel:patches/mcl.patch",
         ],
-        urls = ["https://github.com/herumi/mcl/archive/refs/tags/v1.88.tar.gz"],
+        urls = ["https://github.com/herumi/mcl/archive/refs/tags/v1.99.tar.gz"],
     )
 
 def _lib25519():

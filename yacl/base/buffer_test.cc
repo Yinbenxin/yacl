@@ -28,9 +28,7 @@ TEST(BufferTest, ParallelWorks) {
   v.resize(100000);
   parallel_for(0, v.size(), [&](int64_t begin, int64_t end) {
     for (int64_t i = begin; i < end; ++i) {
-      std::string result = fmt::format("hello_{}", i);
-      v[i] = Buffer(result);
-      // v[i] = Buffer(fmt::format("hello_{}", i));
+      v[i] = Buffer(fmt::format("hello_{}", i));
     }
   });
 }
@@ -42,8 +40,7 @@ TEST(BufferTest, ReserveWorks) {
   buf.reserve(10);
   EXPECT_EQ(buf.size(), 4);
   EXPECT_EQ(buf.capacity(), 10);
-  char *result  = buf.data<char>();
-  EXPECT_STREQ(result, "abc");
+  EXPECT_STREQ(buf.data<char>(), "abc");
 
   EXPECT_ANY_THROW(buf.reserve(1));
   EXPECT_NO_THROW(buf.resize(1));
