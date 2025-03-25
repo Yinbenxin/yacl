@@ -118,7 +118,7 @@ class FactoryTest : public ::testing::Test {
 
     auto create_brpc = [&](int self_rank) {
       contexts_[self_rank] = M::get_t_instance().CreateContext(desc, self_rank);
-      contexts_[self_rank]->chl = std::unique_ptr<gaianet::IChannel>(new gaianet::MemChannel(self_rank, 1-self_rank, "taskid", true));
+      contexts_[self_rank]->add_gaia_net();
     };
 
     std::vector<std::future<void>> creates;
