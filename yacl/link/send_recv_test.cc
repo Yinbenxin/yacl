@@ -147,7 +147,7 @@ class FactoryTest : public ::testing::Test {
   std::vector<std::shared_ptr<Context>> contexts_;
 };
 using FactoryTestTypes =
-    ::testing::Types<TestTypes<FactoryMem, 0>
+    ::testing::Types<TestTypes<FactoryBrpc, 0>
 // using FactoryTestTypes =
 //     ::testing::Types<TestTypes<FactoryMem, 0>, TestTypes<FactoryBrpc, 0>,
 //                      TestTypes<FactoryBrpc, 1>
