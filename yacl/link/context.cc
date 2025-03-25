@@ -219,6 +219,7 @@ void Context::SendAsync(size_t dst_rank, ByteContainerView value,
       char* buff = (char*)value.data();
       size_t sizeT = value.size();
       chl->send(buff, sizeT);
+      return;
   }
   const auto event = NextP2PId(rank_, dst_rank);
 
@@ -234,7 +235,10 @@ void Context::SendAsync(size_t dst_rank, Buffer&& value, std::string_view tag) {
       char* buff = (char*)value.data();
       size_t sizeT = value.size();
       chl->send(buff, sizeT);
+      return;
   }
+  SPDLOG_INFO("YACL send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+  
   const auto event = NextP2PId(rank_, dst_rank);
 
   TraceLogger::LinkTrace(event, tag, value);
@@ -250,8 +254,9 @@ void Context::SendAsyncThrottled(size_t dst_rank, ByteContainerView value,
       char* buff = (char*)value.data();
       size_t sizeT = value.size();
       chl->send(buff, sizeT);
+      return;
   }
-  SPDLOG_INFO("yacl send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+  SPDLOG_INFO("yacl1 send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
 
   const auto event = NextP2PId(rank_, dst_rank);
 
@@ -268,7 +273,10 @@ void Context::SendAsyncThrottled(size_t dst_rank, Buffer&& value,
       char* buff = (char*)value.data();
       size_t sizeT = value.size();
       chl->send(buff, sizeT);
+      return;
   }
+  SPDLOG_INFO("yacl1 send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+
   const auto event = NextP2PId(rank_, dst_rank);
 
   TraceLogger::LinkTrace(event, tag, value);
@@ -285,7 +293,10 @@ void Context::Send(size_t dst_rank, ByteContainerView value,
       char* buff = (char*)value.data();
       size_t sizeT = value.size();
       chl->send(buff, sizeT);
+      return;
   }
+  SPDLOG_INFO("yacl1 send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+
   const auto event = NextP2PId(rank_, dst_rank);
 
   TraceLogger::LinkTrace(event, tag, value);
@@ -303,6 +314,8 @@ if (chl != nullptr)
   Buffer future(str.c_str(), str.length());
   return future;
 }
+SPDLOG_INFO("yacl1 Recv dst_rank={}, tag={}", src_rank, tag);
+
 const auto event = NextP2PId(src_rank, rank_);
 
 TraceLogger::LinkTrace(event, tag, "");
@@ -400,6 +413,7 @@ std::unique_ptr<Context> Context::Spawn(const std::string& id) {
 
   // share statistics with parent.
   sub_ctx->stats_ = this->stats_;
+  sub_ctx->chl =  this->chl;
 
   return sub_ctx;
 }

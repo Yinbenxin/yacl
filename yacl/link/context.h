@@ -319,7 +319,7 @@ class Context {
 
   // get statistics
   std::shared_ptr<const Statistics> GetStats() const;
-  std::unique_ptr<gaianet::IChannel> chl;
+  std::shared_ptr<gaianet::IChannel> chl;
 
  protected:
   using P2PDirection = std::pair<int, int>;
