@@ -461,10 +461,10 @@ def _gaia_net():
     maybe(
         http_archive,
         name = "gaia_net",
-        strip_prefix = "gaia_net-1.5",
-        sha256 = "6308904df74b97d0f9da7b0a858a26c1e0b11bbe3ab3e1fe110d16590a08d950",
+        strip_prefix = "gaia_net-1.6",
+        sha256 = "37ee33b48b170b3de4dfc4427465786a75bb4b4c7d5586c5c4037e9fe500c1a7",
         type = "tar.gz",
         urls = [
-            "https://github.com/Yinbenxin/gaia_net/archive/refs/tags/1.5.tar.gz",
+            "https://github.com/Yinbenxin/gaia_net/archive/refs/tags/1.6.tar.gz",
         ],
     )

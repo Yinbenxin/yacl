@@ -118,7 +118,7 @@ class FactoryTest : public ::testing::Test {
 
     auto create_brpc = [&](int self_rank) {
       contexts_[self_rank] = M::get_t_instance().CreateContext(desc, self_rank);
-      contexts_[self_rank]->add_gaia_net();
+      contexts_[self_rank]->add_gaia_net("rec_serd_test", "grpc", "10.100.66.68:6800", "tcp://redis123@10.100.66.68:9379");
     };
 
     std::vector<std::future<void>> creates;
