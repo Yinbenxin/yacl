@@ -163,8 +163,10 @@ TYPED_TEST(FactoryTest, SendRecv) {
   auto test = [&](int self_rank) {
     if (self_rank == 0) {
       this->contexts_[0]->Send(1, "test", "test");
+      this->contexts_[0]->del_gaia_net();
     } else {
       Buffer r = this->contexts_[1]->Recv(0, "test");
+      this->contexts_[1]->del_gaia_net();
       EXPECT_EQ(std::string(r.data<const char>(), r.size()),
                 std::string("test"));
     }

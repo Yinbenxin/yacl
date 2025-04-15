@@ -325,15 +325,24 @@ class Context {
     const std::string& server_addr = "127.0.0.1:9900",
     const std::string& redis_uri = "tcp://127.0.0.1:6379") {
     if (chl_type == "grpc") {
-      chl = std::make_shared<gaianet::channel>(rank_, 1-rank_, taskid, server_addr, redis_uri);
+      chl = new gaianet::channel(rank_, 1-rank_, taskid, server_addr, redis_uri);
     } else if (chl_type == "mem") {
-      chl = std::make_shared<gaianet::MemChannel>(rank_, 1-rank_, taskid, true);
+      chl = new gaianet::MemChannel(rank_, 1-rank_, taskid, true);
     } 
 }
-
+  void set_gaia_net(gaianet::IChannel* gaia_chl) {
+    chl = gaia_chl;
+  }
+  
+  void del_gaia_net() {
+    if (chl != nullptr) {
+      delete chl;
+      chl = nullptr;
+    }
+  }
  protected:
   using P2PDirection = std::pair<int, int>;
-  std::shared_ptr<gaianet::IChannel> chl;
+  gaianet::IChannel * chl;
 
   const ContextDesc desc_;  // world description.
   const size_t rank_;       // my rank.
