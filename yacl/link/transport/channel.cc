@@ -321,52 +321,52 @@ void Channel::SendMono(const std::string& key, ByteContainerView value,
 void Channel::SendRequestWithRetry(const ::google::protobuf::Message& request,
                                    uint32_t timeout_override_ms,
                                    spdlog::level::level_enum log_level) const {
-  uint32_t retry_count = 0;
-  while (true) {
-    if (aborting_.load()) {
-      YACL_THROW_LINK_ABORTED("channel is aborting");
-    }
-    try {
-      link_->SendRequest(request, timeout_override_ms);
-      break;
-    } catch (const yacl::LinkError& e) {
-      auto should_retry = [&](const RetryOptions& retry_options) -> bool {
-        if (retry_options.aggressive_retry) {
-          return true;
-        }
-        if (retry_options.error_codes.empty() ||
-            retry_options.error_codes.count(e.code())) {
-          return true;
-        }
+  // uint32_t retry_count = 0;
+  // while (true) {
+  //   if (aborting_.load()) {
+  //     YACL_THROW_LINK_ABORTED("channel is aborting");
+  //   }
+  //   try {
+  //     link_->SendRequest(request, timeout_override_ms);
+  //     break;
+  //   } catch (const yacl::LinkError& e) {
+  //     auto should_retry = [&](const RetryOptions& retry_options) -> bool {
+  //       if (retry_options.aggressive_retry) {
+  //         return true;
+  //       }
+  //       if (retry_options.error_codes.empty() ||
+  //           retry_options.error_codes.count(e.code())) {
+  //         return true;
+  //       }
 
-        if (e.http_code() && (retry_options.http_codes.empty() ||
-                              retry_options.http_codes.count(e.http_code()))) {
-          return true;
-        }
-        return false;
-      };
+  //       if (e.http_code() && (retry_options.http_codes.empty() ||
+  //                             retry_options.http_codes.count(e.http_code()))) {
+  //         return true;
+  //       }
+  //       return false;
+  //     };
 
-      if (!should_retry(retry_options_)) {
-        SPDLOG_WARN("send request failed and no retry, message={}", e.what());
-        throw e;
-      }
+  //     if (!should_retry(retry_options_)) {
+  //       SPDLOG_WARN("send request failed and no retry, message={}", e.what());
+  //       throw e;
+  //     }
 
-      if (retry_count >= retry_options_.max_retry) {
-        throw e;
-      }
-      uint32_t interval_ms =
-          std::min(retry_options_.retry_interval_ms +
-                       retry_count * retry_options_.retry_interval_incr_ms,
-                   retry_options_.max_retry_interval_ms);
-      retry_count++;
-      SPDLOG_LOGGER_CALL(
-          spdlog::default_logger_raw(), log_level,
-          "send request failed and retry, retry_count={}, max_retry={}, "
-          "interval_ms={}, message={}",
-          retry_count, retry_options_.max_retry, interval_ms, e.what());
-      std::this_thread::sleep_for(std::chrono::milliseconds(interval_ms));
-    }
-  }
+  //     if (retry_count >= retry_options_.max_retry) {
+  //       throw e;
+  //     }
+  //     uint32_t interval_ms =
+  //         std::min(retry_options_.retry_interval_ms +
+  //                      retry_count * retry_options_.retry_interval_incr_ms,
+  //                  retry_options_.max_retry_interval_ms);
+  //     retry_count++;
+  //     SPDLOG_LOGGER_CALL(
+  //         spdlog::default_logger_raw(), log_level,
+  //         "send request failed and retry, retry_count={}, max_retry={}, "
+  //         "interval_ms={}, message={}",
+  //         retry_count, retry_options_.max_retry, interval_ms, e.what());
+  //     std::this_thread::sleep_for(std::chrono::milliseconds(interval_ms));
+  //   }
+  // }
 }
 
 void Channel::SendTaskSynchronizer::SendTaskStartNotify() {
