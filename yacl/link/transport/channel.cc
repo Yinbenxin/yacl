@@ -321,6 +321,10 @@ void Channel::SendMono(const std::string& key, ByteContainerView value,
 void Channel::SendRequestWithRetry(const ::google::protobuf::Message& request,
                                    uint32_t timeout_override_ms,
                                    spdlog::level::level_enum log_level) const {
+
+  (void)request;
+  (void)timeout_override_ms;
+  (void)log_level;
   // uint32_t retry_count = 0;
   // while (true) {
   //   if (aborting_.load()) {
