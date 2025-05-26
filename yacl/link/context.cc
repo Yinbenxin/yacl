@@ -303,16 +303,15 @@ void Context::Send(size_t dst_rank, ByteContainerView value,
 }
 
 Buffer Context::Recv(size_t src_rank, std::string_view tag) {
-
-if (chl != nullptr)
-{
-  SPDLOG_INFO("GAIA recv src_rank={}, tag={}", src_rank, tag); 
-  std::string str;
-  chl->recv(str);
-  Buffer future(str.c_str(), str.length());
-  return future;
-}
-SPDLOG_INFO("yacl1 Recv dst_rank={}, tag={}", src_rank, tag);
+  if (chl != nullptr)
+  {
+    SPDLOG_INFO("GAIA recv src_rank={}, tag={}", src_rank, tag); 
+    std::string str;
+    chl->recv(str);
+    Buffer future(str.c_str(), str.length());
+    return future;
+  }
+  SPDLOG_INFO("yacl1 Recv dst_rank={}, tag={}", src_rank, tag);
 
   const auto event = NextP2PId(src_rank, rank_);
 
@@ -323,9 +322,17 @@ SPDLOG_INFO("yacl1 Recv dst_rank={}, tag={}", src_rank, tag);
 
 void Context::SendAsyncInternal(size_t dst_rank, const std::string& key,
                                 ByteContainerView value) {
-  YACL_ENFORCE(dst_rank < static_cast<size_t>(channels_.size()),
-               "rank={} out of range={}", dst_rank, channels_.size());
 
+  if (chl != nullptr)
+  {   
+    SPDLOG_INFO("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), key);
+      char* buff = (char*)value.data();
+      size_t sizeT = value.size();
+      chl->send(buff, sizeT);
+      return;
+  }
+  YACL_ENFORCE(dst_rank < static_cast<size_t>(channels_.size()),
+  "rank={} out of range={}", dst_rank, channels_.size());
   channels_[dst_rank]->SendAsync(key, value);
 
   stats_->sent_actions++;
@@ -385,7 +392,14 @@ void Context::SendInternal(size_t dst_rank, const std::string& key,
 Buffer Context::RecvInternal(size_t src_rank, const std::string& key) {
   YACL_ENFORCE(src_rank < static_cast<size_t>(channels_.size()),
                "rank={} out of range={}", src_rank, channels_.size());
-
+  if (chl != nullptr)
+  {
+    SPDLOG_INFO("GAIA recv src_rank={}, tag={}", src_rank, key); 
+    std::string str;
+    chl->recv(str);
+    Buffer future(str.c_str(), str.length());
+    return future;
+  }
   auto value = channels_[src_rank]->Recv(key);
 
   stats_->recv_actions++;
