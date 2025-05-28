@@ -293,7 +293,7 @@ void Context::Send(size_t dst_rank, ByteContainerView value,
       chl->send(buff, sizeT);
       return;
   }
-  SPDLOG_INFO("yacl1 send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+  SPDLOG_INFO("yacl send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
 
   const auto event = NextP2PId(rank_, dst_rank);
 
