@@ -323,9 +323,14 @@ class Context {
     const std::string& taskid = "taskid", 
     const std::string& chl_type = "mem",
     const std::string& server_addr = "127.0.0.1:9900",
-    const std::string& redis_uri = "tcp://127.0.0.1:6379") {
+    const std::string& redis_uri = "tcp://127.0.0.1:6379",
+    uint32_t connect_wait_time = 20000,
+    bool use_redis = true,
+    bool net_log_switch = false,
+    const std::map<std::string, std::string>& meta = std::map<std::string, std::string>()
+  ) {
     if (chl_type == "grpc") {
-      chl = std::make_shared<gaianet::channel>(rank_, 1-rank_, taskid, server_addr, redis_uri);
+      chl = std::make_shared<gaianet::channel>(rank_, 1-rank_, taskid, server_addr, redis_uri, connect_wait_time, use_redis, net_log_switch,  meta);
     } else if (chl_type == "mem") {
       chl = std::make_shared<gaianet::MemChannel>(rank_, 1-rank_, taskid, true);
     } 

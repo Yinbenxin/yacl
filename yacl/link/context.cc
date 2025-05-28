@@ -293,7 +293,7 @@ void Context::Send(size_t dst_rank, ByteContainerView value,
       chl->send(buff, sizeT);
       return;
   }
-  SPDLOG_INFO("yacl send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+  SPDLOG_INFO("yacl1 send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
 
   const auto event = NextP2PId(rank_, dst_rank);
 
@@ -343,7 +343,14 @@ void Context::SendAsyncInternal(size_t dst_rank, const std::string& key,
                                 Buffer&& value) {
   YACL_ENFORCE(dst_rank < channels_.size(), "rank={} out of range={}", dst_rank,
                channels_.size());
-
+  if (chl != nullptr)
+  {   
+    SPDLOG_INFO("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), key);
+      char* buff = (char*)value.data();
+      size_t sizeT = value.size();
+      chl->send(buff, sizeT);
+      return;
+  }
   const size_t value_length = value.size();
 
   channels_[dst_rank]->SendAsync(key, std::move(value));
