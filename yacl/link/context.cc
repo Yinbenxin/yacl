@@ -214,7 +214,7 @@ void Context::SendAsync(size_t dst_rank, ByteContainerView value,
                         std::string_view tag) {
   if (chl != nullptr)
   {   
-    SPDLOG_INFO("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+    SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
       char* buff = (char*)value.data();
       size_t sizeT = value.size();
       chl->send(buff, sizeT);
@@ -230,13 +230,13 @@ void Context::SendAsync(size_t dst_rank, ByteContainerView value,
 void Context::SendAsync(size_t dst_rank, Buffer&& value, std::string_view tag) {
   if (chl != nullptr)
   {   
-    SPDLOG_INFO("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+    SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
       char* buff = (char*)value.data();
       size_t sizeT = value.size();
       chl->send(buff, sizeT);
       return;
   }
-  SPDLOG_INFO("YACL send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+  SPDLOG_DEBUG("YACL send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
   
   const auto event = NextP2PId(rank_, dst_rank);
 
@@ -249,13 +249,13 @@ void Context::SendAsyncThrottled(size_t dst_rank, ByteContainerView value,
                                  std::string_view tag) {
   if (chl != nullptr)
   {   
-    SPDLOG_INFO("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+    SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
       char* buff = (char*)value.data();
       size_t sizeT = value.size();
       chl->send(buff, sizeT);
       return;
   }
-  SPDLOG_INFO("yacl1 send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+  SPDLOG_DEBUG("yacl1 send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
 
   const auto event = NextP2PId(rank_, dst_rank);
 
@@ -268,13 +268,13 @@ void Context::SendAsyncThrottled(size_t dst_rank, Buffer&& value,
                                  std::string_view tag) {
   if (chl != nullptr)
   {   
-    SPDLOG_INFO("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+    SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
       char* buff = (char*)value.data();
       size_t sizeT = value.size();
       chl->send(buff, sizeT);
       return;
   }
-  SPDLOG_INFO("yacl1 send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+  SPDLOG_DEBUG("yacl1 send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
 
   const auto event = NextP2PId(rank_, dst_rank);
 
@@ -287,13 +287,13 @@ void Context::Send(size_t dst_rank, ByteContainerView value,
                    std::string_view tag) {
   if (chl != nullptr)
   {   
-    SPDLOG_INFO("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+    SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
       char* buff = (char*)value.data();
       size_t sizeT = value.size();
       chl->send(buff, sizeT);
       return;
   }
-  SPDLOG_INFO("yacl1 send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+  SPDLOG_DEBUG("yacl1 send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
 
   const auto event = NextP2PId(rank_, dst_rank);
 
@@ -305,13 +305,13 @@ void Context::Send(size_t dst_rank, ByteContainerView value,
 Buffer Context::Recv(size_t src_rank, std::string_view tag) {
   if (chl != nullptr)
   {
-    SPDLOG_INFO("GAIA recv src_rank={}, tag={}", src_rank, tag); 
+    SPDLOG_DEBUG("GAIA recv src_rank={}, tag={}", src_rank, tag); 
     std::string str;
     chl->recv(str);
     Buffer future(str.c_str(), str.length());
     return future;
   }
-  SPDLOG_INFO("yacl1 Recv dst_rank={}, tag={}", src_rank, tag);
+  SPDLOG_DEBUG("yacl1 Recv dst_rank={}, tag={}", src_rank, tag);
 
   const auto event = NextP2PId(src_rank, rank_);
 
@@ -325,7 +325,7 @@ void Context::SendAsyncInternal(size_t dst_rank, const std::string& key,
 
   if (chl != nullptr)
   {   
-    SPDLOG_INFO("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), key);
+    SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), key);
       char* buff = (char*)value.data();
       size_t sizeT = value.size();
       chl->send(buff, sizeT);
@@ -345,7 +345,7 @@ void Context::SendAsyncInternal(size_t dst_rank, const std::string& key,
                channels_.size());
   if (chl != nullptr)
   {   
-    SPDLOG_INFO("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), key);
+    SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), key);
       char* buff = (char*)value.data();
       size_t sizeT = value.size();
       chl->send(buff, sizeT);
@@ -401,7 +401,7 @@ Buffer Context::RecvInternal(size_t src_rank, const std::string& key) {
                "rank={} out of range={}", src_rank, channels_.size());
   if (chl != nullptr)
   {
-    SPDLOG_INFO("GAIA recv src_rank={}, tag={}", src_rank, key); 
+    SPDLOG_DEBUG("GAIA recv src_rank={}, tag={}", src_rank, key); 
     std::string str;
     chl->recv(str);
     Buffer future(str.c_str(), str.length());
