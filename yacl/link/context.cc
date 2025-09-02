@@ -215,7 +215,7 @@ void Context::SendAsync(size_t dst_rank, ByteContainerView value,
   if (chl != nullptr)
   {   
     SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-      string str((char*)value.data(), value.size());
+      std::string str((char*)value.data(), value.size());
       chl->send(str);
       return;
   }
@@ -230,7 +230,7 @@ void Context::SendAsync(size_t dst_rank, Buffer&& value, std::string_view tag) {
   if (chl != nullptr)
   {   
     SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-      string str((char*)value.data(), value.size());
+      std::string str((char*)value.data(), value.size());
       chl->send(str);
       return;
   }
@@ -248,7 +248,7 @@ void Context::SendAsyncThrottled(size_t dst_rank, ByteContainerView value,
   if (chl != nullptr)
   {   
     SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-      string str((char*)value.data(), value.size());
+      std::string str((char*)value.data(), value.size());
       chl->send(str);
       return;
   }
@@ -266,7 +266,7 @@ void Context::SendAsyncThrottled(size_t dst_rank, Buffer&& value,
   if (chl != nullptr)
   {   
       SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-      string str((char*)value.data(), value.size());
+      std::string str((char*)value.data(), value.size());
       chl->send(str);
       return;
   }
@@ -284,7 +284,7 @@ void Context::Send(size_t dst_rank, ByteContainerView value,
   if (chl != nullptr)
   {   
       SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-      string str((char*)value.data(), value.size());
+      std::string str((char*)value.data(), value.size());
       chl->send(str);
       return;
   }
@@ -321,7 +321,7 @@ void Context::SendAsyncInternal(size_t dst_rank, const std::string& key,
   if (chl != nullptr)
   {   
     SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), key);
-      string str((char*)value.data(), value.size());
+      std::string str((char*)value.data(), value.size());
       chl->send(str);
       return;
   }
@@ -340,7 +340,7 @@ void Context::SendAsyncInternal(size_t dst_rank, const std::string& key,
   if (chl != nullptr)
   {   
       SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), key);
-      string str((char*)value.data(), value.size());
+      std::string str((char*)value.data(), value.size());
       chl->send(str);
       return;
   }
