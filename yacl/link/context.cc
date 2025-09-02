@@ -215,9 +215,8 @@ void Context::SendAsync(size_t dst_rank, ByteContainerView value,
   if (chl != nullptr)
   {   
     SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-      char* buff = (char*)value.data();
-      size_t sizeT = value.size();
-      chl->send(buff, sizeT);
+      string str((char*)value.data(), value.size());
+      chl->send(str);
       return;
   }
   const auto event = NextP2PId(rank_, dst_rank);
@@ -231,9 +230,8 @@ void Context::SendAsync(size_t dst_rank, Buffer&& value, std::string_view tag) {
   if (chl != nullptr)
   {   
     SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-      char* buff = (char*)value.data();
-      size_t sizeT = value.size();
-      chl->send(buff, sizeT);
+      string str((char*)value.data(), value.size());
+      chl->send(str);
       return;
   }
   SPDLOG_DEBUG("YACL send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
@@ -250,9 +248,8 @@ void Context::SendAsyncThrottled(size_t dst_rank, ByteContainerView value,
   if (chl != nullptr)
   {   
     SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-      char* buff = (char*)value.data();
-      size_t sizeT = value.size();
-      chl->send(buff, sizeT);
+      string str((char*)value.data(), value.size());
+      chl->send(str);
       return;
   }
   SPDLOG_DEBUG("yacl1 send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
@@ -268,10 +265,9 @@ void Context::SendAsyncThrottled(size_t dst_rank, Buffer&& value,
                                  std::string_view tag) {
   if (chl != nullptr)
   {   
-    SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-      char* buff = (char*)value.data();
-      size_t sizeT = value.size();
-      chl->send(buff, sizeT);
+      SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+      string str((char*)value.data(), value.size());
+      chl->send(str);
       return;
   }
   SPDLOG_DEBUG("yacl1 send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
@@ -287,10 +283,9 @@ void Context::Send(size_t dst_rank, ByteContainerView value,
                    std::string_view tag) {
   if (chl != nullptr)
   {   
-    SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-      char* buff = (char*)value.data();
-      size_t sizeT = value.size();
-      chl->send(buff, sizeT);
+      SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
+      string str((char*)value.data(), value.size());
+      chl->send(str);
       return;
   }
   SPDLOG_DEBUG("yacl1 send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
@@ -326,9 +321,8 @@ void Context::SendAsyncInternal(size_t dst_rank, const std::string& key,
   if (chl != nullptr)
   {   
     SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), key);
-      char* buff = (char*)value.data();
-      size_t sizeT = value.size();
-      chl->send(buff, sizeT);
+      string str((char*)value.data(), value.size());
+      chl->send(str);
       return;
   }
   YACL_ENFORCE(dst_rank < static_cast<size_t>(channels_.size()),
@@ -345,10 +339,9 @@ void Context::SendAsyncInternal(size_t dst_rank, const std::string& key,
                channels_.size());
   if (chl != nullptr)
   {   
-    SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), key);
-      char* buff = (char*)value.data();
-      size_t sizeT = value.size();
-      chl->send(buff, sizeT);
+      SPDLOG_DEBUG("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), key);
+      string str((char*)value.data(), value.size());
+      chl->send(str);
       return;
   }
   const size_t value_length = value.size();
