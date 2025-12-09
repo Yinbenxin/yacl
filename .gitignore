@@ -48,3 +48,10 @@ external
 
 #brpc
 rpc_data
+
+.clwb
+cmake-build-debug-remote
+
+# doc translation files
+docs/**/*.mo
+docs/**/*.pot

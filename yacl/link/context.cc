@@ -74,7 +74,6 @@ Context::Context(ContextDesc desc, size_t rank,
       recv_timeout_ms_(desc_.recv_timeout_ms),
       is_sub_world_(is_sub_world) {
   const size_t world_size = desc_.parties.size();
-  // chl = std::unique_ptr<gaianet::IChannel>(new gaianet::MemChannel(rank, 1-rank, "taskid", true));
 
   YACL_ENFORCE(rank_ < static_cast<size_t>(world_size),
                "rank={} out of range world_size={}", rank, world_size);
@@ -213,14 +212,6 @@ void Context::ConnectToMesh(spdlog::level::level_enum connect_log_level) {
 // P2P algorithms
 void Context::SendAsync(size_t dst_rank, ByteContainerView value,
                         std::string_view tag) {
-  if (chl != nullptr)
-  {   
-    SPDLOG_INFO("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-      char* buff = (char*)value.data();
-      size_t sizeT = value.size();
-      chl->send(buff, sizeT);
-      return;
-  }
   const auto event = NextP2PId(rank_, dst_rank);
 
   TraceLogger::LinkTrace(event, tag, value);
@@ -229,16 +220,6 @@ void Context::SendAsync(size_t dst_rank, ByteContainerView value,
 }
 
 void Context::SendAsync(size_t dst_rank, Buffer&& value, std::string_view tag) {
-  if (chl != nullptr)
-  {   
-    SPDLOG_INFO("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-      char* buff = (char*)value.data();
-      size_t sizeT = value.size();
-      chl->send(buff, sizeT);
-      return;
-  }
-  SPDLOG_INFO("YACL send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-  
   const auto event = NextP2PId(rank_, dst_rank);
 
   TraceLogger::LinkTrace(event, tag, value);
@@ -248,16 +229,6 @@ void Context::SendAsync(size_t dst_rank, Buffer&& value, std::string_view tag) {
 
 void Context::SendAsyncThrottled(size_t dst_rank, ByteContainerView value,
                                  std::string_view tag) {
-  if (chl != nullptr)
-  {   
-    SPDLOG_INFO("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-      char* buff = (char*)value.data();
-      size_t sizeT = value.size();
-      chl->send(buff, sizeT);
-      return;
-  }
-  SPDLOG_INFO("yacl1 send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-
   const auto event = NextP2PId(rank_, dst_rank);
 
   TraceLogger::LinkTrace(event, tag, value);
@@ -267,16 +238,6 @@ void Context::SendAsyncThrottled(size_t dst_rank, ByteContainerView value,
 
 void Context::SendAsyncThrottled(size_t dst_rank, Buffer&& value,
                                  std::string_view tag) {
-  if (chl != nullptr)
-  {   
-    SPDLOG_INFO("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-      char* buff = (char*)value.data();
-      size_t sizeT = value.size();
-      chl->send(buff, sizeT);
-      return;
-  }
-  SPDLOG_INFO("yacl1 send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-
   const auto event = NextP2PId(rank_, dst_rank);
 
   TraceLogger::LinkTrace(event, tag, value);
@@ -284,19 +245,8 @@ void Context::SendAsyncThrottled(size_t dst_rank, Buffer&& value,
   SendAsyncThrottledInternal(dst_rank, event, std::move(value));
 }
 
-
 void Context::Send(size_t dst_rank, ByteContainerView value,
                    std::string_view tag) {
-  if (chl != nullptr)
-  {   
-    SPDLOG_INFO("GAIA send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-      char* buff = (char*)value.data();
-      size_t sizeT = value.size();
-      chl->send(buff, sizeT);
-      return;
-  }
-  SPDLOG_INFO("yacl1 send dst_rank={}, value={}, tag={}", dst_rank, value.size(), tag);
-
   const auto event = NextP2PId(rank_, dst_rank);
 
   TraceLogger::LinkTrace(event, tag, value);
@@ -305,25 +255,12 @@ void Context::Send(size_t dst_rank, ByteContainerView value,
 }
 
 Buffer Context::Recv(size_t src_rank, std::string_view tag) {
+  const auto event = NextP2PId(src_rank, rank_);
 
-if (chl != nullptr)
-{
-  SPDLOG_INFO("GAIA recv src_rank={}, tag={}", src_rank, tag); 
-  std::string str;
-  chl->recv(str);
-  Buffer future(str.c_str(), str.length());
-  return future;
+  TraceLogger::LinkTrace(event, tag, "");
+
+  return RecvInternal(src_rank, event);
 }
-SPDLOG_INFO("yacl1 Recv dst_rank={}, tag={}", src_rank, tag);
-
-const auto event = NextP2PId(src_rank, rank_);
-
-TraceLogger::LinkTrace(event, tag, "");
-
-return RecvInternal(src_rank, event);
-
-}
-
 
 void Context::SendAsyncInternal(size_t dst_rank, const std::string& key,
                                 ByteContainerView value) {
@@ -352,7 +289,6 @@ void Context::SendAsyncInternal(size_t dst_rank, const std::string& key,
 void Context::SendAsyncThrottledInternal(size_t dst_rank,
                                          const std::string& key,
                                          ByteContainerView value) {
-
   YACL_ENFORCE(dst_rank < static_cast<size_t>(channels_.size()),
                "rank={} out of range={}", dst_rank, channels_.size());
 
@@ -413,7 +349,6 @@ std::unique_ptr<Context> Context::Spawn(const std::string& id) {
 
   // share statistics with parent.
   sub_ctx->stats_ = this->stats_;
-  sub_ctx->chl =  this->chl;
 
   return sub_ctx;
 }

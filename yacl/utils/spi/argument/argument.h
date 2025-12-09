@@ -24,6 +24,6 @@ namespace yacl {
 
 // Global args define for all SPI..
 
-DECLARE_ARG_string(Lib);  // define arg: ArgLib
+DEFINE_INLINE_ARG_string(Lib);  // define arg: ArgLib
 
 }  // namespace yacl

@@ -41,10 +41,11 @@ namespace yacl::crypto {
 // ---------------------------
 
 // Core implementation of filling deterministic pseudorandomness, return the
-// increased counter (count++, presumably).
-// Note: FillPRand is different from drbg, NIST800-90A since FillPRand will
-// never perform healthcheck, reseed. FillPRand is only an abstract API for the
-// theoretical tool: PRG.
+// increased counter (count++, presumably). FillPRand-like implementations never
+// perform healthcheck, reseed.
+//
+// NOTE FillPRand is not an instantiation of NIST800-90A.
+//
 uint64_t FillPRand(SymmetricCrypto::CryptoType type, uint128_t seed,
                    uint64_t iv, uint64_t count, char* buf, size_t len);
 
@@ -224,6 +225,49 @@ uint64_t FillPRandWithMersennePrime(SymmetricCrypto::CryptoType crypto_type,
     }
     return ret;
   }
+}
+
+// -----------------------------
+// Fill Pseudorandoms within mod
+// -----------------------------
+
+// type traits, currently we only support 3 types:
+// uint128_t, uint64_t, uint32_t
+template <typename T>
+struct IsSupportedLtNContainerType
+    : public std::disjunction<std::is_same<uint128_t, T>,
+                              std::is_same<uint64_t, T>,
+                              std::is_same<uint32_t, T>> {};
+
+template <typename T,
+          std::enable_if_t<IsSupportedLtNContainerType<T>::value, bool> = true>
+uint64_t FillPRandWithLtN(SymmetricCrypto::CryptoType crypto_type,
+                          uint128_t seed, uint64_t iv, uint64_t count,
+                          absl::Span<T> out, T n) {
+  size_t n_bit_width = 0;
+  // first, fill all outputs with randomness
+  if constexpr (std::is_same_v<T, uint128_t>) {
+    n_bit_width = CountBitWidth(n);
+  } else {
+    n_bit_width = absl::bit_width(n);
+  }
+
+  auto required_size =
+      (n_bit_width + YACL_MODULE_SECPARAM_S_UINT("prg") + 7) / 8;
+  Buffer rand_bytes(out.size() * required_size);
+  auto ret = FillPRand(crypto_type, seed, iv, count, (char*)rand_bytes.data(),
+                       out.size() * required_size);
+
+  // then, perform mod
+  ByteContainerView rand_view(rand_bytes);
+  for (size_t i = 0; i < out.size(); ++i) {
+    math::MPInt r;
+    r.FromMagBytes(rand_view.subspan(i * required_size, required_size),
+                   Endian::little);
+    math::MPInt::Mod(r, math::MPInt(n), &r);
+    out[i] = r.Get<T>();
+  }
+  return ret;
 }
 
 // ---------------------------

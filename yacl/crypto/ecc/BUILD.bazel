@@ -42,6 +42,7 @@ yacl_cc_library(
         ":curve_meta",
         ":ec_point",
         "//yacl/base:byte_container_view",
+        "//yacl/crypto/ecc/hash_to_curve",
         "//yacl/math/mpint",
         "//yacl/utils/spi",
     ],
@@ -77,7 +78,7 @@ yacl_cc_library(
     ],
     deps = [
         "//yacl/base:exception",
-        "@com_google_absl//absl/strings",
+        "@abseil-cpp//absl/strings",
     ],
 )
 
@@ -88,7 +89,7 @@ yacl_cc_test(
     ],
     deps = [
         ":ecc",
-        "@com_github_fmtlib_fmt//:fmtlib",
+        "@fmt",
         "@yacl//yacl/utils:parallel",
     ],
 )

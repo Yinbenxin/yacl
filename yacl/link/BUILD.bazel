@@ -35,7 +35,7 @@ yacl_cc_library(
     }),
     deps = [
         "//yacl/base:exception",
-        "@com_google_absl//absl/strings",
+        "@abseil-cpp//absl/strings",
     ],
 )
 
@@ -67,7 +67,6 @@ yacl_cc_library(
         "//yacl/base:byte_container_view",
         "//yacl/link/transport:channel",
         "//yacl/utils:hash_combine",
-        "@gaia_net//src:gaia_net",
     ],
 )
 
@@ -129,7 +128,7 @@ yacl_cc_library(
         "//yacl/base:buffer",
         "//yacl/link:context",
         "//yacl/link:factory",
-        "@com_github_fmtlib_fmt//:fmtlib",
+        "@fmt",
     ],
 )
 
@@ -142,16 +141,5 @@ cc_proto_library(
     name = "link_cc_proto",
     deps = [
         ":link_proto",
-    ],
-)
-
-yacl_cc_test(
-    name = "send_recv_test",
-    srcs = ["send_recv_test.cc"],
-    deps = [
-        ":context",
-        ":factory",
-        ":link",
-        "//yacl/crypto:key_utils",
     ],
 )

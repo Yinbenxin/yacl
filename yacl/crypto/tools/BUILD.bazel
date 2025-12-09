@@ -43,6 +43,7 @@ yacl_cc_test(
     srcs = ["prg_test.cc"],
     deps = [
         ":prg",
+        "//yacl/crypto/rand",
     ],
 )
 
@@ -115,6 +116,6 @@ yacl_cc_binary(
         ":rp",
         "//yacl/base:aligned_vector",
         "//yacl/crypto/rand",
-        "@com_github_google_benchmark//:benchmark_main",
+        "@google_benchmark//:benchmark_main",
     ],
 )

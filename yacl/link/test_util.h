@@ -16,9 +16,7 @@
 
 #include <future>
 #include <vector>
-#include "ichannel.h"
-#include "channel.h"
-#include "memchannel.h"
+
 #include "fmt/format.h"
 
 #include "yacl/base/buffer.h"
@@ -76,7 +74,6 @@ inline std::vector<std::shared_ptr<Context>> SetupWorld(const std::string& id,
   std::vector<std::shared_ptr<Context>> contexts(world_size);
   for (size_t rank = 0; rank < world_size; rank++) {
     contexts[rank] = FactoryMem().CreateContext(ctx_desc, rank);
-    contexts[rank]->chl = std::unique_ptr<gaianet::IChannel>(new gaianet::MemChannel(rank, 1-rank, "taskid", true));
   }
 
   auto proc = [&](size_t rank) { contexts[rank]->ConnectToMesh(); };

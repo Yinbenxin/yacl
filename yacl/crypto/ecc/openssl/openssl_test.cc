@@ -16,6 +16,9 @@
 
 #include "gtest/gtest.h"
 
+#include "yacl/crypto/ecc/hash_to_curve/p256.h"
+#include "yacl/crypto/ecc/hash_to_curve/p384.h"
+#include "yacl/crypto/ecc/hash_to_curve/p521.h"
 #include "yacl/crypto/ecc/openssl/openssl_group.h"
 #include "yacl/utils/parallel.h"
 #include "yacl/utils/spi/spi_factory.h"
@@ -90,6 +93,60 @@ TEST(OpensslTest, HashToCurveWorks) {
   }
 }
 
+TEST(OpensslTest, P256HashToCurveWorks) {
+  auto curve = OpensslGroup::Create(GetCurveMetaByName("P-256"));
+  auto is_unique = [&](EcPoint q) {
+    auto p = curve->CopyPoint(q);
+    ASSERT_TRUE(curve->IsInCurveGroup(p));
+    static std::vector<EcPoint> v;
+    for (const auto &item : v) {
+      ASSERT_FALSE(curve->PointEqual(item, p));
+    }
+    v.emplace_back(std::move(p));
+  };
+  for (int i = 0; i < 1000; ++i) {
+    is_unique(curve->HashToCurve(HashToCurveStrategy::SHA256_SSWU_NU_,
+                                 fmt::format("id{}", i)));
+  }
+}
+
+TEST(OpensslTest, P384HashToCurveWorks) {
+  auto curve = OpensslGroup::Create(GetCurveMetaByName("P-384"));
+  auto is_unique = [&](EcPoint q) {
+    auto p = curve->CopyPoint(q);
+    ASSERT_TRUE(curve->IsInCurveGroup(p));
+    static std::vector<EcPoint> v;
+    for (const auto &item : v) {
+      ASSERT_FALSE(curve->PointEqual(item, p));
+    }
+    v.emplace_back(std::move(p));
+  };
+  for (int i = 0; i < 1000; ++i) {
+    is_unique(curve->HashToCurve(HashToCurveStrategy::SHA384_SSWU_NU_,
+                                 fmt::format("id{}", i)));
+  }
+}
+
+TEST(OpensslTest, P521HashToCurveWorks) {
+  auto curve = OpensslGroup::Create(GetCurveMetaByName("P-521"));
+  auto is_unique = [&](EcPoint q) {
+    auto p = curve->CopyPoint(q);
+    ASSERT_TRUE(curve->IsInCurveGroup(p));
+    static std::vector<EcPoint> v;
+    for (const auto &item : v) {
+      ASSERT_FALSE(curve->PointEqual(item, p));
+    }
+    v.emplace_back(std::move(p));
+  };
+  for (int i = 0; i < 1000; ++i) {
+    is_unique(curve->HashToCurve(HashToCurveStrategy::SHA512_SSWU_NU_,
+                                 fmt::format("id{}", i)));
+    // Same as above
+    // is_unique(curve->HashToCurve(HashToCurveStrategy::TryAndIncrement_BLAKE3,
+    //                              fmt::format("id{}", i)));
+  }
+}
+
 TEST(OpensslTest, AddInplaceWorks) {
   std::shared_ptr<EcGroup> p = OpensslGroup::Create(GetCurveMetaByName("sm2"));
   auto curve = std::dynamic_pointer_cast<OpensslGroup>(p);
@@ -102,7 +159,7 @@ TEST(OpensslTest, AddInplaceWorks) {
 
 TEST(OpensslMemLeakTest, MulBaseLeaks) {
   std::shared_ptr<yacl::crypto::EcGroup> ec =
-      yacl::crypto::EcGroupFactory::Instance().Create("sm2",
+      yacl::crypto::EcGroupFactory::Instance().Create("brainpoolP256r1",
                                                       ArgLib = "openssl");
 
   yacl::parallel_for(0, 2, [&](int64_t, int64_t) {

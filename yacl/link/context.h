@@ -22,9 +22,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "ichannel.h"
-#include "channel.h"
-#include "memchannel.h"
+
 #include "yacl/base/byte_container_view.h"
 #include "yacl/link/retry_options.h"
 #include "yacl/link/ssl_options.h"
@@ -319,15 +317,15 @@ class Context {
 
   // get statistics
   std::shared_ptr<const Statistics> GetStats() const;
-  std::shared_ptr<gaianet::IChannel> chl;
 
  protected:
   using P2PDirection = std::pair<int, int>;
-  
+
   const ContextDesc desc_;  // world description.
   const size_t rank_;       // my rank.
   const std::vector<std::shared_ptr<transport::IChannel>> channels_;
   const std::shared_ptr<transport::IReceiverLoop> receiver_loop_;
+
   // stateful properties.
   size_t counter_ = 0U;  // collective algorithm counter.
   std::map<P2PDirection, int> p2p_counter_;

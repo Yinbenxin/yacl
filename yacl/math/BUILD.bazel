@@ -17,9 +17,14 @@ load("//bazel:yacl.bzl", "yacl_cc_library")
 package(default_visibility = ["//visibility:public"])
 
 yacl_cc_library(
+    name = "common",
+    hdrs = ["common.h"],
+)
+
+yacl_cc_library(
     name = "gadget",
     hdrs = ["gadget.h"],
     deps = [
-        "@com_google_absl//absl/strings",
+        "@abseil-cpp//absl/strings",
     ],
 )
